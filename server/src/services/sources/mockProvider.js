@@ -29,7 +29,7 @@ export function createMockProvider() {
         if (filters.employeesMax != null && employees > filters.employeesMax) continue;
 
         const noWebsite = filters.onlyNoWebsite ? true : Math.random() < 0.4;
-        const domain = `${slug(root)}-${slug(branche).slice(0, 8)}.nl`;
+        const domain = `${slug(root)}-${slug(branche)}.nl`;
 
         const candidate = {
           companyName,
