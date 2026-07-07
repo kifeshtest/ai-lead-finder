@@ -31,6 +31,8 @@ export const config = {
   kvkApiKey: process.env.KVK_API_KEY || '',
   kvkApiBase: process.env.KVK_API_BASE || 'https://api.kvk.nl/api/v2',
   googlePlacesApiKey: process.env.GOOGLE_PLACES_API_KEY || '',
+  // Harde limiet op Google Places-verzoeken per generatie (kostenbeheersing).
+  maxPlacesRequests: int(process.env.MAX_PLACES_REQUESTS, 40),
 };
 
 export const usePostgres = Boolean(config.databaseUrl);

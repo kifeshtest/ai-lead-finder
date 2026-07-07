@@ -48,14 +48,21 @@ export function createGoogleProvider() {
     async *stream({ filters = {} } = {}) {
       const provinces = filters.province ? [filters.province] : Object.keys(PROVINCES);
       const branches = filters.branche ? [filters.branche] : BRANCHES;
+      const maxCalls = config.maxPlacesRequests;
+      let calls = 0;
       for (const province of provinces) {
         const cities = filters.city ? [filters.city] : PROVINCES[province];
         for (const city of cities) {
           for (const branche of branches) {
             let pageToken;
             for (let page = 0; page < 3; page++) {
+              if (calls >= maxCalls) {
+                logger.info(`Places-limiet bereikt (${maxCalls} verzoeken) — stoppen om kosten te beperken.`);
+                return;
+              }
               let data;
               try {
+                calls++;
                 data = await searchText(`${branche} in ${city}`, pageToken);
               } catch (err) {
                 logger.warn(`Places-zoekopdracht mislukt (${branche}/${city}):`, err.message);
