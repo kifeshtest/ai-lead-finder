@@ -130,12 +130,13 @@ export function createOverpassProvider() {
         const web = mapProv(webEls, true);         // bedrijven mét website (worden geauditeerd)
         const noSite = mapProv(phoneEls, false);   // bedrijven zónder website (heetste leads)
 
-        // Interleave: per ronde eerst een "geen website"-lead, dan een website-lead,
-        // zodat beide soorten in de resultaten terechtkomen.
+        // Interleave, website-bedrijven eerst per ronde. Belangrijk: "geen website"-leads
+        // kwalificeren direct (geen audit), dus als we die eerst zouden aanbieden vullen ze
+        // alle plekken vóór een enkele website-audit klaar is. Website eerst geeft beide een kans.
         const max = Math.max(web.length, noSite.length);
         for (let i = 0; i < max; i++) {
-          if (i < noSite.length) yield noSite[i];
           if (i < web.length) yield web[i];
+          if (i < noSite.length) yield noSite[i];
         }
       }
     },
