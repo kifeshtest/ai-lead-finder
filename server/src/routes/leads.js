@@ -18,7 +18,7 @@ router.patch('/:id', async (req, res) => {
   const patch = {};
   const { status, note } = req.body || {};
   if (status !== undefined) {
-    if (!['nieuw', 'afgehandeld'].includes(status)) return res.status(400).json({ error: 'Ongeldige status' });
+    if (!['nieuw', 'gemaild', 'gebeld'].includes(status)) return res.status(400).json({ error: 'Ongeldige status' });
     patch.status = status;
   }
   if (note !== undefined) patch.note = String(note).slice(0, 2000);

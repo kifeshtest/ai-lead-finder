@@ -47,6 +47,8 @@ export function createPgStore() {
     if (f.employeesMax != null) add('employees <= $?', f.employeesMax);
     if (f.onlyNoWebsite) clauses.push('has_website = FALSE');
     if (f.onlyOutdated) clauses.push('is_outdated = TRUE');
+    if (f.onlyEmail) clauses.push("email IS NOT NULL AND email <> ''");
+    if (f.status) add('status = $?', f.status);
     if (f.minScore != null) add('website_score >= $?', f.minScore);
     if (f.maxScore != null) add('website_score <= $?', f.maxScore);
     return { where: clauses.length ? `WHERE ${clauses.join(' AND ')}` : '', vals };

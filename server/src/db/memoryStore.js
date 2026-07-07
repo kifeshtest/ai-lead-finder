@@ -26,6 +26,8 @@ export function createMemoryStore() {
     if (f.employeesMax != null && (l.employees == null || l.employees > f.employeesMax)) return false;
     if (f.onlyNoWebsite && l.hasWebsite) return false;
     if (f.onlyOutdated && !l.isOutdated) return false;
+    if (f.onlyEmail && !l.email) return false;
+    if (f.status && (l.status || 'nieuw') !== f.status) return false;
     if (f.minScore != null && (l.websiteScore == null || l.websiteScore < f.minScore)) return false;
     if (f.maxScore != null && l.websiteScore != null && l.websiteScore > f.maxScore) return false;
     return true;

@@ -40,8 +40,8 @@ export default function App() {
     setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, ...lead } : l)));
   };
 
-  const doneCount = leads.filter((l) => l.status === 'afgehandeld').length;
-  const visibleLeads = hideDone ? leads.filter((l) => l.status !== 'afgehandeld') : leads;
+  const doneCount = leads.filter((l) => l.status === 'gebeld').length;
+  const visibleLeads = hideDone ? leads.filter((l) => l.status !== 'gebeld') : leads;
 
   const onGenerate = async () => {
     setError(null);
@@ -119,7 +119,7 @@ export default function App() {
           {doneCount > 0 && (
             <label className="flex items-center gap-2 text-sm text-slate-600">
               <input type="checkbox" className="h-4 w-4 rounded border-slate-300 text-brand-600" checked={hideDone} onChange={(e) => setHideDone(e.target.checked)} />
-              Verberg afgehandelde ({doneCount})
+              Verberg gebelde ({doneCount})
             </label>
           )}
         </div>

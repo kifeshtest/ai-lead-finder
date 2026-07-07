@@ -33,6 +33,15 @@ export default function Filters({ filters, setFilters, onApply, onReset }) {
           <input className={inputCls} placeholder="bv. Kapper" value={filters.branche || ''} onChange={(e) => set('branche', e.target.value)} />
         </div>
         <div>
+          <label className={labelCls}>Status</label>
+          <select className={inputCls} value={filters.status || ''} onChange={(e) => set('status', e.target.value)}>
+            <option value="">Alle statussen</option>
+            <option value="nieuw">Nieuw</option>
+            <option value="gemaild">Mail gestuurd (nog te bellen)</option>
+            <option value="gebeld">Gebeld</option>
+          </select>
+        </div>
+        <div>
           <label className={labelCls}>Min. websitescore</label>
           <input type="number" min="0" max="100" className={inputCls} value={filters.minScore ?? ''} onChange={(e) => set('minScore', e.target.value)} />
         </div>
@@ -51,6 +60,10 @@ export default function Filters({ filters, setFilters, onApply, onReset }) {
         <label className="flex items-center gap-2 self-end pb-2 text-sm text-slate-700">
           <input type="checkbox" className="h-4 w-4 rounded border-slate-300 text-brand-600" checked={!!filters.onlyOutdated} onChange={(e) => set('onlyOutdated', e.target.checked)} />
           Alleen verouderde website
+        </label>
+        <label className="flex items-center gap-2 self-end pb-2 text-sm text-slate-700">
+          <input type="checkbox" className="h-4 w-4 rounded border-slate-300 text-brand-600" checked={!!filters.onlyEmail} onChange={(e) => set('onlyEmail', e.target.checked)} />
+          Alleen met e-mailadres
         </label>
       </div>
 

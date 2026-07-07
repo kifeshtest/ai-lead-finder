@@ -22,7 +22,7 @@ export default function LeadCard({ lead, demo, onUpdate }) {
   const [note, setNote] = useState(lead.note || '');
   const [saveState, setSaveState] = useState(''); // '' | 'saving' | 'saved' | 'error'
   const badge = scoreBadge(lead);
-  const done = lead.status === 'afgehandeld';
+  const status = lead.status || 'nieuw';
   const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(`${lead.companyName} ${lead.city || ''}`)}`;
   const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(`${lead.companyName} ${lead.city || ''}`)}`;
 
@@ -45,14 +45,32 @@ export default function LeadCard({ lead, demo, onUpdate }) {
       setSaveState('error');
     }
   };
-  const toggleDone = () => persist({ status: done ? 'nieuw' : 'afgehandeld' });
+  const setStatus = (s) => persist({ status: s });
   const saveNote = () => { if ((lead.note || '') !== note) persist({ note }); };
 
+  const tint =
+    status === 'gebeld' ? 'border-emerald-300 bg-emerald-50/50'
+    : status === 'gemaild' ? 'border-amber-300 bg-amber-50/50'
+    : 'border-slate-200 bg-white';
+  const pill = (active, color) => {
+    const base = 'rounded-full px-3 py-1 text-xs font-semibold border transition ';
+    if (!active) return base + 'border-slate-200 text-slate-500 hover:bg-slate-50';
+    return base + {
+      slate: 'border-slate-400 bg-slate-100 text-slate-700',
+      amber: 'border-amber-300 bg-amber-100 text-amber-800',
+      emerald: 'border-emerald-300 bg-emerald-100 text-emerald-800',
+    }[color];
+  };
+
   return (
-    <div className={`flex flex-col rounded-2xl border p-5 shadow-sm transition hover:shadow-md ${done ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200 bg-white'}`}>
+    <div className={`flex flex-col rounded-2xl border p-5 shadow-sm transition hover:shadow-md ${tint}`}>
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="font-bold leading-tight text-slate-900">{lead.companyName}{done && <span className="ml-2 align-middle text-xs font-semibold text-emerald-600">✓ afgehandeld</span>}</h3>
+          <h3 className="font-bold leading-tight text-slate-900">
+            {lead.companyName}
+            {status === 'gebeld' && <span className="ml-2 align-middle text-xs font-semibold text-emerald-600">✓ gebeld</span>}
+            {status === 'gemaild' && <span className="ml-2 align-middle text-xs font-semibold text-amber-600">✉ mail gestuurd</span>}
+          </h3>
           <p className="text-sm text-slate-500">
             {lead.branche} · {lead.city}{lead.province ? `, ${lead.province}` : ''}
           </p>
@@ -102,15 +120,11 @@ export default function LeadCard({ lead, demo, onUpdate }) {
       {/* Afvinken + notitie (blijft bewaard in het systeem) */}
       <div className="mt-3 border-t border-slate-100 pt-3">
         <div className="flex items-center justify-between gap-2">
-          <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700">
-            <input
-              type="checkbox"
-              checked={done}
-              onChange={toggleDone}
-              className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-            />
-            {done ? 'Afgehandeld' : 'Markeer als gebeld / afgehandeld'}
-          </label>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <button type="button" onClick={() => setStatus('nieuw')} className={pill(status === 'nieuw', 'slate')}>Nieuw</button>
+            <button type="button" onClick={() => setStatus('gemaild')} className={pill(status === 'gemaild', 'amber')}>Mail gestuurd</button>
+            <button type="button" onClick={() => setStatus('gebeld')} className={pill(status === 'gebeld', 'emerald')}>Gebeld</button>
+          </div>
           {saveState === 'saving' && <span className="text-[11px] text-slate-400">Opslaan…</span>}
           {saveState === 'saved' && <span className="text-[11px] font-medium text-emerald-600">Opgeslagen ✓</span>}
           {saveState === 'error' && <span className="text-[11px] font-medium text-rose-600">Opslaan mislukt</span>}
