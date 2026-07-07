@@ -7,11 +7,17 @@
 
 [build.environment]
   NODE_VERSION = "20"
-  # BELANGRIJK: zet hier (of in Netlify → Site settings → Environment variables)
-  # de URL van je Render-backend, zodat de frontend de juiste API aanroept:
-  # VITE_API_URL = "https://ai-lead-finder-api.onrender.com"
 
-# SPA-fallback (client-side routing werkt altijd)
+# API-proxy: /api/* wordt server-side doorgestuurd naar de Render-backend.
+# Hierdoor werkt de frontend zonder VITE_API_URL en zonder CORS-gedoe.
+# (Wijzig de URL hieronder als je Render-backend een andere naam heeft.)
+[[redirects]]
+  from = "/api/*"
+  to = "https://ai-lead-finder-api.onrender.com/api/:splat"
+  status = 200
+  force = true
+
+# SPA-fallback — MOET ná de /api-regel staan (Netlify pakt de eerste match).
 [[redirects]]
   from = "/*"
   to = "/index.html"
