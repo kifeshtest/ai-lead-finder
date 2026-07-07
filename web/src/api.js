@@ -26,6 +26,12 @@ export const api = {
       body: JSON.stringify(clean(filters)),
     }).then(json),
   getRun: (id) => fetch(`${BASE}/api/generate/${id}`).then(json),
+  updateLead: (id, patch) =>
+    fetch(`${BASE}/api/leads/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(patch),
+    }).then(json),
   exportUrl: (type, filters) => `${BASE}/api/export/${type}?${new URLSearchParams(clean(filters))}`,
 };
 

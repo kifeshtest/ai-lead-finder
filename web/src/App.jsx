@@ -16,6 +16,7 @@ export default function App() {
   const [progress, setProgress] = useState(null);
   const [health, setHealth] = useState(null);
   const [error, setError] = useState(null);
+  const [hideDone, setHideDone] = useState(false);
   const pollRef = useRef(null);
 
   const loadStats = () => api.stats().then(setStats).catch(() => {});
@@ -33,6 +34,14 @@ export default function App() {
 
   const applyFilters = () => { setApplied(filters); loadLeads(filters); };
   const resetFilters = () => { setFilters({}); setApplied({}); loadLeads({}); };
+
+  const updateLead = async (id, patch) => {
+    const { lead } = await api.updateLead(id, patch);
+    setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, ...lead } : l)));
+  };
+
+  const doneCount = leads.filter((l) => l.status === 'afgehandeld').length;
+  const visibleLeads = hideDone ? leads.filter((l) => l.status !== 'afgehandeld') : leads;
 
   const onGenerate = async () => {
     setError(null);
@@ -103,9 +112,17 @@ export default function App() {
       <div className="mb-6"><Filters filters={filters} setFilters={setFilters} onApply={applyFilters} onReset={resetFilters} /></div>
 
       <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-lg font-bold text-slate-900">
-          {leads.length} leads{Object.keys(applied).length ? ' (gefilterd)' : ''}
-        </h2>
+        <div className="flex flex-wrap items-center gap-4">
+          <h2 className="text-lg font-bold text-slate-900">
+            {visibleLeads.length} leads{Object.keys(applied).length ? ' (gefilterd)' : ''}
+          </h2>
+          {doneCount > 0 && (
+            <label className="flex items-center gap-2 text-sm text-slate-600">
+              <input type="checkbox" className="h-4 w-4 rounded border-slate-300 text-brand-600" checked={hideDone} onChange={(e) => setHideDone(e.target.checked)} />
+              Verberg afgehandelde ({doneCount})
+            </label>
+          )}
+        </div>
         <ExportBar filters={applied} leads={leads} />
       </div>
 
@@ -117,7 +134,9 @@ export default function App() {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {leads.map((l) => <LeadCard key={l.id ?? l.dedupeKey} lead={l} demo={health?.source === 'mock'} />)}
+          {visibleLeads.map((l) => (
+            <LeadCard key={l.id ?? l.dedupeKey} lead={l} demo={health?.source === 'mock'} onUpdate={updateLead} />
+          ))}
         </div>
       )}
     </div>

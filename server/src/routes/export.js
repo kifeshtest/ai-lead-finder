@@ -17,6 +17,8 @@ const COLUMNS = [
   { header: 'Heeft website', key: 'hasWebsite', width: 14 },
   { header: 'Reden', key: 'reason', width: 36 },
   { header: 'Motivatie', key: 'motivation', width: 60 },
+  { header: 'Status', key: 'status', width: 14 },
+  { header: 'Notitie', key: 'note', width: 40 },
   { header: 'Laatste controle', key: 'lastChecked', width: 22 },
 ];
 

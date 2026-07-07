@@ -1,6 +1,11 @@
+import { readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
 import pg from 'pg';
 import { config } from '../config.js';
 import { logger } from '../utils/logger.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const mapRow = (r) => ({
   id: r.id,
@@ -20,6 +25,8 @@ const mapRow = (r) => ({
   reason: r.reason,
   reasonTags: r.reason_tags || [],
   motivation: r.motivation,
+  status: r.status || 'nieuw',
+  note: r.note || '',
   audit: r.audit || {},
   source: r.source,
   lastChecked: r.last_checked,
@@ -48,8 +55,10 @@ export function createPgStore() {
   return {
     kind: 'postgres',
     async init() {
-      await pool.query('SELECT 1');
-      logger.info('Store: PostgreSQL verbonden.');
+      // Maak/actualiseer het schema automatisch (idempotent) — geen aparte migratie nodig.
+      const sql = readFileSync(join(__dirname, 'schema.sql'), 'utf8');
+      await pool.query(sql);
+      logger.info('Store: PostgreSQL verbonden en schema gecontroleerd.');
     },
     async hasDedupeKey(key) {
       const { rows } = await pool.query('SELECT 1 FROM leads WHERE dedupe_key = $1 LIMIT 1', [key]);
@@ -71,6 +80,17 @@ export function createPgStore() {
         ]
       );
       return { inserted: rows[0]?.inserted === true };
+    },
+    async updateLead(id, patch) {
+      const { rows } = await pool.query(
+        `UPDATE leads
+           SET status = COALESCE($2, status),
+               note   = COALESCE($3, note)
+         WHERE id = $1
+         RETURNING *`,
+        [id, patch.status ?? null, patch.note ?? null]
+      );
+      return rows[0] ? mapRow(rows[0]) : null;
     },
     async listLeads(filters = {}) {
       const { where, vals } = buildWhere(filters);

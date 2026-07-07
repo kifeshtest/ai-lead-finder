@@ -17,9 +17,12 @@ function leadToText(l) {
   ].filter(Boolean).join('\n');
 }
 
-export default function LeadCard({ lead, demo }) {
+export default function LeadCard({ lead, demo, onUpdate }) {
   const [copied, setCopied] = useState(false);
+  const [note, setNote] = useState(lead.note || '');
+  const [saveState, setSaveState] = useState(''); // '' | 'saving' | 'saved' | 'error'
   const badge = scoreBadge(lead);
+  const done = lead.status === 'afgehandeld';
   const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(`${lead.companyName} ${lead.city || ''}`)}`;
   const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(`${lead.companyName} ${lead.city || ''}`)}`;
 
@@ -31,11 +34,25 @@ export default function LeadCard({ lead, demo }) {
     } catch {}
   };
 
+  const persist = async (patch) => {
+    if (!onUpdate) return;
+    setSaveState('saving');
+    try {
+      await onUpdate(lead.id, patch);
+      setSaveState('saved');
+      setTimeout(() => setSaveState(''), 1500);
+    } catch {
+      setSaveState('error');
+    }
+  };
+  const toggleDone = () => persist({ status: done ? 'nieuw' : 'afgehandeld' });
+  const saveNote = () => { if ((lead.note || '') !== note) persist({ note }); };
+
   return (
-    <div className="flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:shadow-md">
+    <div className={`flex flex-col rounded-2xl border p-5 shadow-sm transition hover:shadow-md ${done ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-200 bg-white'}`}>
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h3 className="font-bold leading-tight text-slate-900">{lead.companyName}</h3>
+          <h3 className="font-bold leading-tight text-slate-900">{lead.companyName}{done && <span className="ml-2 align-middle text-xs font-semibold text-emerald-600">✓ afgehandeld</span>}</h3>
           <p className="text-sm text-slate-500">
             {lead.branche} · {lead.city}{lead.province ? `, ${lead.province}` : ''}
           </p>
@@ -80,6 +97,32 @@ export default function LeadCard({ lead, demo }) {
         <span className="ml-auto text-[11px] text-slate-400">
           {lead.lastChecked ? new Date(lead.lastChecked).toLocaleDateString('nl-NL') : ''}
         </span>
+      </div>
+
+      {/* Afvinken + notitie (blijft bewaard in het systeem) */}
+      <div className="mt-3 border-t border-slate-100 pt-3">
+        <div className="flex items-center justify-between gap-2">
+          <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-slate-700">
+            <input
+              type="checkbox"
+              checked={done}
+              onChange={toggleDone}
+              className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+            />
+            {done ? 'Afgehandeld' : 'Markeer als gebeld / afgehandeld'}
+          </label>
+          {saveState === 'saving' && <span className="text-[11px] text-slate-400">Opslaan…</span>}
+          {saveState === 'saved' && <span className="text-[11px] font-medium text-emerald-600">Opgeslagen ✓</span>}
+          {saveState === 'error' && <span className="text-[11px] font-medium text-rose-600">Opslaan mislukt</span>}
+        </div>
+        <textarea
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          onBlur={saveNote}
+          rows={2}
+          placeholder="Notitie (bijv. gebeld op 7-7, terugbellen volgende week, geen interesse)…"
+          className="mt-2 w-full resize-y rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20"
+        />
       </div>
     </div>
   );

@@ -46,8 +46,15 @@ export function createMemoryStore() {
         return { inserted: false };
       }
       keys.add(lead.dedupeKey);
-      leads.unshift({ id: leadId++, createdAt: new Date().toISOString(), ...lead });
+      leads.unshift({ id: leadId++, createdAt: new Date().toISOString(), status: 'nieuw', note: '', ...lead });
       return { inserted: true };
+    },
+    async updateLead(id, patch) {
+      const l = leads.find((x) => x.id === Number(id));
+      if (!l) return null;
+      if (patch.status != null) l.status = patch.status;
+      if (patch.note != null) l.note = patch.note;
+      return l;
     },
     async listLeads(filters = {}) {
       const limit = filters.limit || 500;

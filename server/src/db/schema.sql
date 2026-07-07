@@ -16,6 +16,8 @@ CREATE TABLE IF NOT EXISTS leads (
   reason        TEXT,
   reason_tags   TEXT[] DEFAULT '{}',
   motivation    TEXT,
+  status        TEXT NOT NULL DEFAULT 'nieuw',   -- nieuw | afgehandeld
+  note          TEXT,                            -- vrije notitie (bijv. "gebeld op ...")
   audit         JSONB DEFAULT '{}'::jsonb,
   source        TEXT,
   last_checked  TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -27,6 +29,10 @@ CREATE INDEX IF NOT EXISTS idx_leads_city       ON leads (city);
 CREATE INDEX IF NOT EXISTS idx_leads_branche    ON leads (branche);
 CREATE INDEX IF NOT EXISTS idx_leads_score      ON leads (website_score);
 CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads (created_at);
+
+-- Idempotente upgrades voor bestaande databases
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'nieuw';
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS note   TEXT;
 
 CREATE TABLE IF NOT EXISTS generation_runs (
   id          BIGSERIAL PRIMARY KEY,

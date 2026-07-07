@@ -1,6 +1,15 @@
-# Render Blueprint — backend API van AI Lead Finder (mock-modus).
-# Deploy: ga naar https://dashboard.render.com → New → Blueprint → koppel je GitHub-repo.
-# Render leest dit bestand en maakt automatisch de service aan.
+# Render Blueprint — backend API van AI Lead Finder.
+# Deploy/actualiseren: dashboard.render.com → Blueprints → jouw blueprint → "Apply"/"Sync"
+# (nieuwe database + DATABASE_URL worden dan aangemaakt en gekoppeld).
+
+databases:
+  # Gratis PostgreSQL zodat leads, status en notities blijvend bewaard worden
+  # (en gedeeld tussen iedereen die de link opent).
+  - name: ai-lead-finder-db
+    plan: free
+    databaseName: leadfinder
+    user: leadfinder
+
 services:
   - type: web
     name: ai-lead-finder-api
@@ -12,12 +21,17 @@ services:
     healthCheckPath: /api/health
     autoDeploy: true
     envVars:
+      # Koppelt automatisch aan de database hierboven → app schakelt van geheugen
+      # naar persistente opslag en maakt het schema zelf aan bij het opstarten.
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ai-lead-finder-db
+          property: connectionString
       - key: NODE_VERSION
         value: "20.18.0"
       - key: LEAD_SOURCE
         value: mock
-      # "*" = sta alle origins toe (demo). Zet dit later op je exacte Netlify-URL
-      # bijv. https://jouw-app.netlify.app voor strengere beveiliging.
+      # "*" = sta alle origins toe (demo). Zet later op je exacte Netlify-URL.
       - key: CORS_ORIGIN
         value: "*"
       - key: ENABLE_AI
@@ -26,5 +40,3 @@ services:
         value: "55"
       - key: LEADS_PER_RUN
         value: "50"
-      # In mock-modus zijn DATABASE_URL en REDIS_URL NIET nodig
-      # (in-memory opslag + inline worker). Voeg ze later toe voor productie.
