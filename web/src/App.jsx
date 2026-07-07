@@ -17,12 +17,13 @@ export default function App() {
   const [health, setHealth] = useState(null);
   const [error, setError] = useState(null);
   const [hideDone, setHideDone] = useState(false);
+  const [sort, setSort] = useState('score');
   const pollRef = useRef(null);
 
   const loadStats = () => api.stats().then(setStats).catch(() => {});
-  const loadLeads = (f) => {
+  const loadLeads = (f = applied) => {
     setLoading(true);
-    return api.leads(f).then((r) => setLeads(r.leads)).catch((e) => setError(e.message)).finally(() => setLoading(false));
+    return api.leads({ ...f, sort }).then((r) => setLeads(r.leads)).catch((e) => setError(e.message)).finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -38,6 +39,22 @@ export default function App() {
   const updateLead = async (id, patch) => {
     const { lead } = await api.updateLead(id, patch);
     setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, ...lead } : l)));
+  };
+
+  const changeSort = (val) => {
+    setSort(val);
+    setLoading(true);
+    api.leads({ ...applied, sort: val }).then((r) => setLeads(r.leads)).catch((e) => setError(e.message)).finally(() => setLoading(false));
+  };
+
+  const clearAll = async () => {
+    if (!window.confirm('Weet je zeker dat je ALLE leads wilt verwijderen? Dit kan niet ongedaan gemaakt worden.')) return;
+    try {
+      const { deleted } = await api.clearLeads();
+      await Promise.all([loadLeads(applied), loadStats()]);
+      setError(null);
+      console.info(`${deleted} leads verwijderd`);
+    } catch (e) { setError(e.message); }
   };
 
   const doneCount = leads.filter((l) => l.status === 'gebeld').length;
@@ -116,6 +133,13 @@ export default function App() {
           <h2 className="text-lg font-bold text-slate-900">
             {visibleLeads.length} leads{Object.keys(applied).length ? ' (gefilterd)' : ''}
           </h2>
+          <label className="flex items-center gap-2 text-sm text-slate-600">
+            Sorteer:
+            <select value={sort} onChange={(e) => changeSort(e.target.value)} className="rounded-lg border border-slate-300 bg-white px-2 py-1 text-sm">
+              <option value="score">Heetste eerst (geen/zwakke site)</option>
+              <option value="recent">Nieuwste eerst</option>
+            </select>
+          </label>
           {doneCount > 0 && (
             <label className="flex items-center gap-2 text-sm text-slate-600">
               <input type="checkbox" className="h-4 w-4 rounded border-slate-300 text-brand-600" checked={hideDone} onChange={(e) => setHideDone(e.target.checked)} />
@@ -123,7 +147,12 @@ export default function App() {
             </label>
           )}
         </div>
-        <ExportBar filters={applied} leads={leads} />
+        <div className="flex items-center gap-2">
+          <ExportBar filters={{ ...applied, sort }} leads={leads} />
+          <button onClick={clearAll} className="rounded-lg border border-rose-300 bg-white px-3 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50">
+            🗑 Wis alles
+          </button>
+        </div>
       </div>
 
       {loading ? (

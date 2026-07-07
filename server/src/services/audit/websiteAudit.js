@@ -1,7 +1,8 @@
 import * as cheerio from 'cheerio';
 
 const CURRENT_YEAR = new Date().getFullYear();
-const UA = 'Mozilla/5.0 (compatible; AILeadFinder/1.0; +https://example.com/bot)';
+// Realistische browser-identiteit (zoals Lighthouse/Chrome) om onterechte bot-blokkades (403) te vermijden.
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36';
 
 function normalizeUrl(url) {
   if (!url) return null;

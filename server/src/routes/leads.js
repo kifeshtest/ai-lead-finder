@@ -28,4 +28,11 @@ router.patch('/:id', async (req, res) => {
   res.json({ lead });
 });
 
+// DELETE /api/leads  → wis alle leads (schoon starten met echte data)
+router.delete('/', async (req, res) => {
+  const store = await getStore();
+  const deleted = await store.clearLeads();
+  res.json({ ok: true, deleted });
+});
+
 export default router;

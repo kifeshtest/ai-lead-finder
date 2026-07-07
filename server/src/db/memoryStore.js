@@ -60,7 +60,24 @@ export function createMemoryStore() {
     },
     async listLeads(filters = {}) {
       const limit = filters.limit || 500;
-      return leads.filter((l) => matches(l, filters)).slice(0, limit);
+      const arr = leads.filter((l) => matches(l, filters));
+      if (filters.sort !== 'recent') {
+        // Heetste eerst: geen website bovenaan, daarna laagste score.
+        arr.sort((a, b) => {
+          const aw = a.hasWebsite ? 1 : 0, bw = b.hasWebsite ? 1 : 0;
+          if (aw !== bw) return aw - bw;
+          const as = a.websiteScore == null ? -1 : a.websiteScore;
+          const bs = b.websiteScore == null ? -1 : b.websiteScore;
+          return as - bs;
+        });
+      }
+      return arr.slice(0, limit);
+    },
+    async clearLeads() {
+      const n = leads.length;
+      leads.length = 0;
+      keys.clear();
+      return n;
     },
     async stats() {
       const t = config.scoreThreshold;

@@ -15,6 +15,7 @@ export function parseFilters(src = {}) {
     onlyOutdated: src.onlyOutdated !== undefined ? bool(src.onlyOutdated) : undefined,
     onlyEmail: src.onlyEmail !== undefined ? bool(src.onlyEmail) : undefined,
     status: src.status || undefined,
+    sort: src.sort || undefined,
     limit: num(src.limit),
   };
   for (const k of Object.keys(f)) if (f[k] === undefined || Number.isNaN(f[k])) delete f[k];

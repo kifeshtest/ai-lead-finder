@@ -97,11 +97,19 @@ export function createPgStore() {
     async listLeads(filters = {}) {
       const { where, vals } = buildWhere(filters);
       const limit = filters.limit || 500;
+      const order =
+        filters.sort === 'recent'
+          ? 'created_at DESC'
+          : 'has_website ASC, website_score ASC NULLS FIRST, created_at DESC'; // heetste eerst
       const { rows } = await pool.query(
-        `SELECT * FROM leads ${where} ORDER BY created_at DESC LIMIT ${Number(limit)}`,
+        `SELECT * FROM leads ${where} ORDER BY ${order} LIMIT ${Number(limit)}`,
         vals
       );
       return rows.map(mapRow);
+    },
+    async clearLeads() {
+      const { rowCount } = await pool.query('DELETE FROM leads');
+      return rowCount;
     },
     async stats() {
       const t = config.scoreThreshold;

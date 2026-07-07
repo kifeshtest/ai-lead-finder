@@ -32,6 +32,7 @@ export const api = {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(patch),
     }).then(json),
+  clearLeads: () => fetch(`${BASE}/api/leads`, { method: 'DELETE' }).then(json),
   exportUrl: (type, filters) => `${BASE}/api/export/${type}?${new URLSearchParams(clean(filters))}`,
 };
 
