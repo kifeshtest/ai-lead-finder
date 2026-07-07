@@ -38,8 +38,7 @@ function detectYear(html, headers) {
  * Echte, technische website-audit via één HTTP-request + HTML-analyse.
  * (Optioneel wordt de performance later verrijkt met Lighthouse.)
  */
-export async function realAudit(rawUrl) {
-  const url = normalizeUrl(rawUrl);
+async function attemptAudit(url) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), config.auditTimeoutMs);
   const started = Date.now();
@@ -93,4 +92,19 @@ export async function realAudit(rawUrl) {
   } finally {
     clearTimeout(timeout);
   }
+}
+
+/**
+ * Echte audit met één retry: op de kleine Render-CPU mislukt een fetch soms tijdelijk;
+ * een tweede poging herstelt veel valse "onbereikbaar"-resultaten.
+ */
+export async function realAudit(rawUrl) {
+  const url = normalizeUrl(rawUrl);
+  if (!url) return { reachable: false, https: false, error: 'geen url' };
+  let result = await attemptAudit(url);
+  if (!result.reachable) {
+    await new Promise((r) => setTimeout(r, 600));
+    result = await attemptAudit(url);
+  }
+  return result;
 }
