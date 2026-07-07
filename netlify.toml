@@ -1,0 +1,18 @@
+# Netlify-configuratie — frontend (React/Vite dashboard).
+# De `base` is de web-map; Netlify draait de build daarin.
+[build]
+  base = "web"
+  command = "npm run build"
+  publish = "dist"            # relatief t.o.v. base → web/dist
+
+[build.environment]
+  NODE_VERSION = "20"
+  # BELANGRIJK: zet hier (of in Netlify → Site settings → Environment variables)
+  # de URL van je Render-backend, zodat de frontend de juiste API aanroept:
+  # VITE_API_URL = "https://ai-lead-finder-api.onrender.com"
+
+# SPA-fallback (client-side routing werkt altijd)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

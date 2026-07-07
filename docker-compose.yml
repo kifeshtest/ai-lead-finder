@@ -1,0 +1,29 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: leadfinder-postgres
+    environment:
+      POSTGRES_USER: leadfinder
+      POSTGRES_PASSWORD: leadfinder
+      POSTGRES_DB: leadfinder
+    ports:
+      - "5432:5432"
+    volumes:
+      - leadfinder_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U leadfinder"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: leadfinder-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - leadfinder_redisdata:/data
+
+volumes:
+  leadfinder_pgdata:
+  leadfinder_redisdata:

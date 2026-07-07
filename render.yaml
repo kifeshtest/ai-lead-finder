@@ -1,0 +1,30 @@
+# Render Blueprint — backend API van AI Lead Finder (mock-modus).
+# Deploy: ga naar https://dashboard.render.com → New → Blueprint → koppel je GitHub-repo.
+# Render leest dit bestand en maakt automatisch de service aan.
+services:
+  - type: web
+    name: ai-lead-finder-api
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm install --omit=optional
+    startCommand: node src/index.js
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20.18.0"
+      - key: LEAD_SOURCE
+        value: mock
+      # "*" = sta alle origins toe (demo). Zet dit later op je exacte Netlify-URL
+      # bijv. https://jouw-app.netlify.app voor strengere beveiliging.
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: ENABLE_AI
+        value: "false"
+      - key: SCORE_THRESHOLD
+        value: "55"
+      - key: LEADS_PER_RUN
+        value: "50"
+      # In mock-modus zijn DATABASE_URL en REDIS_URL NIET nodig
+      # (in-memory opslag + inline worker). Voeg ze later toe voor productie.
