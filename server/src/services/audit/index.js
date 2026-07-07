@@ -34,9 +34,12 @@ export async function auditCompany(candidate) {
   }
 
   const { score, reason, reasonTags, isOutdated } = computeScore(signals);
+  const reachable = signals.reachable !== false;
   return {
     hasWebsite: true,
-    qualifies: score < config.scoreThreshold,
+    // Alleen een lead als we de site écht konden bereiken én die zwak scoort.
+    // Onbereikbare audits (vaak een tijdelijke fout) niet als "zwakke site" tellen.
+    qualifies: reachable && score < config.scoreThreshold,
     score, reason, reasonTags, isOutdated,
     audit: signals,
   };
