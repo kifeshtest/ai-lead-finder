@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { config } from '../../config.js';
 
 const CURRENT_YEAR = new Date().getFullYear();
 // Realistische browser-identiteit (zoals Lighthouse/Chrome) om onterechte bot-blokkades (403) te vermijden.
@@ -40,7 +41,7 @@ function detectYear(html, headers) {
 export async function realAudit(rawUrl) {
   const url = normalizeUrl(rawUrl);
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 12000);
+  const timeout = setTimeout(() => controller.abort(), config.auditTimeoutMs);
   const started = Date.now();
   try {
     const res = await fetch(url, {
@@ -50,7 +51,7 @@ export async function realAudit(rawUrl) {
     });
     const performanceMs = Date.now() - started;
     const finalUrl = res.url || url;
-    const html = (await res.text()).slice(0, 500000);
+    const html = (await res.text()).slice(0, 300000);
     const $ = cheerio.load(html);
 
     const viewport = $('meta[name="viewport"]').attr('content') || '';

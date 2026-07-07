@@ -42,3 +42,9 @@ services:
         value: "55"
       - key: LEADS_PER_RUN
         value: "50"
+      # Render-gratis heeft weinig CPU: minder gelijktijdige audits + langere timeout
+      # voorkomt dat websites onterecht als "onbereikbaar" (score 18) worden gemarkeerd.
+      - key: AUDIT_CONCURRENCY
+        value: "3"
+      - key: AUDIT_TIMEOUT_MS
+        value: "20000"

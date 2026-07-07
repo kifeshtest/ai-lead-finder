@@ -20,6 +20,7 @@ export const config = {
   scoreThreshold: int(process.env.SCORE_THRESHOLD, 55),
   leadsPerRun: int(process.env.LEADS_PER_RUN, 50),
   auditConcurrency: int(process.env.AUDIT_CONCURRENCY, 5),
+  auditTimeoutMs: int(process.env.AUDIT_TIMEOUT_MS, 15000),
   maxSearchAttempts: int(process.env.MAX_SEARCH_ATTEMPTS, 600),
 
   enableLighthouse: bool(process.env.ENABLE_LIGHTHOUSE, false),
