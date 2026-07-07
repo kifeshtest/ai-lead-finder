@@ -29,8 +29,10 @@ services:
           property: connectionString
       - key: NODE_VERSION
         value: "20.18.0"
+      # Bron: openstreetmap = echte NL-bedrijven met telefoon + website (gratis, geen key).
+      # Alternatieven: mock (demo) | google | kvk
       - key: LEAD_SOURCE
-        value: mock
+        value: openstreetmap
       # "*" = sta alle origins toe (demo). Zet later op je exacte Netlify-URL.
       - key: CORS_ORIGIN
         value: "*"

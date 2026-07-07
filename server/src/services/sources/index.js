@@ -2,6 +2,7 @@ import { config } from '../../config.js';
 import { createMockProvider } from './mockProvider.js';
 import { createGoogleProvider } from './googlePlacesProvider.js';
 import { createKvkProvider } from './kvkProvider.js';
+import { createOverpassProvider } from './overpassProvider.js';
 
 /**
  * Kiest de actieve bron op basis van config.leadSource.
@@ -13,6 +14,9 @@ export function getProvider(source = config.leadSource) {
       return createGoogleProvider();
     case 'kvk':
       return createKvkProvider();
+    case 'openstreetmap':
+    case 'osm':
+      return createOverpassProvider();
     case 'mock':
     default:
       return createMockProvider();
