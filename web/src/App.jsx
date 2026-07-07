@@ -87,6 +87,13 @@ export default function App() {
           <Badge label={`AI: ${health.ai}`} />
         </div>
       )}
+      {health?.source === 'mock' && (
+        <div className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          <b>Demo-modus (voorbeelddata):</b> deze bedrijven en websites zijn fictief, dus de sites bestaan niet echt.
+          De knop <b>“Bedrijf opzoeken”</b> doet daarom een Google-zoekopdracht in plaats van een dode link.
+          Voeg KVK- of Google-API-keys toe voor échte bedrijven met werkende websites.
+        </div>
+      )}
       {error && (
         <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">{error}</div>
       )}
@@ -110,7 +117,7 @@ export default function App() {
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {leads.map((l) => <LeadCard key={l.id ?? l.dedupeKey} lead={l} />)}
+          {leads.map((l) => <LeadCard key={l.id ?? l.dedupeKey} lead={l} demo={health?.source === 'mock'} />)}
         </div>
       )}
     </div>

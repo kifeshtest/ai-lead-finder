@@ -17,10 +17,11 @@ function leadToText(l) {
   ].filter(Boolean).join('\n');
 }
 
-export default function LeadCard({ lead }) {
+export default function LeadCard({ lead, demo }) {
   const [copied, setCopied] = useState(false);
   const badge = scoreBadge(lead);
   const mapsUrl = `https://www.google.com/maps/search/${encodeURIComponent(`${lead.companyName} ${lead.city || ''}`)}`;
+  const searchUrl = `https://www.google.com/search?q=${encodeURIComponent(`${lead.companyName} ${lead.city || ''}`)}`;
 
   const copy = async () => {
     try {
@@ -60,9 +61,15 @@ export default function LeadCard({ lead }) {
 
       <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-slate-100 pt-3">
         {lead.website && (
-          <a href={lead.website} target="_blank" rel="noopener noreferrer" className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">
-            Website openen
-          </a>
+          demo ? (
+            <a href={searchUrl} target="_blank" rel="noopener noreferrer" title="Demodata: dit is een fictief bedrijf. Deze knop zoekt het op via Google." className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">
+              Bedrijf opzoeken
+            </a>
+          ) : (
+            <a href={lead.website} target="_blank" rel="noopener noreferrer" className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">
+              Website openen
+            </a>
+          )
         )}
         <a href={mapsUrl} target="_blank" rel="noopener noreferrer" className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">
           Google Maps
