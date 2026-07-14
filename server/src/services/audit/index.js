@@ -37,9 +37,9 @@ export async function auditCompany(candidate) {
   const reachable = signals.reachable !== false;
   return {
     hasWebsite: true,
-    // Alleen een lead als we de site écht konden bereiken én die zwak scoort.
-    // Onbereikbare audits (vaak een tijdelijke fout) niet als "zwakke site" tellen.
-    qualifies: reachable && score < config.scoreThreshold,
+    // Ruim binnenhalen: zwakke/matige sites én onzekere (onbereikbare) sites.
+    // De echte beoordeling gebeurt daarna via de PageSpeed-analyse (lead_score).
+    qualifies: !reachable || score < 68,
     score, reason, reasonTags, isOutdated,
     audit: signals,
   };

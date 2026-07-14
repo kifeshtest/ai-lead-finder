@@ -48,3 +48,13 @@ services:
         value: "3"
       - key: AUDIT_TIMEOUT_MS
         value: "15000"
+      # ── Auth ── (JWT-secret genereert Render zelf; wachtwoord zet je zelf in het dashboard)
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_USERNAME
+        value: jaimy
+      - key: ADMIN_PASSWORD
+        sync: false
+      # ── PageSpeed Insights (gratis key, geen creditcard) — optioneel maar aanbevolen ──
+      - key: PAGESPEED_API_KEY
+        sync: false

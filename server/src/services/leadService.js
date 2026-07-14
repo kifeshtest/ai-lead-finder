@@ -3,10 +3,11 @@ import { logger } from '../utils/logger.js';
 import { getProvider } from './sources/index.js';
 import { auditCompany } from './audit/index.js';
 import { generateMotivation } from './ai/motivation.js';
+import { computeLeadScore } from './analysis/leadScore.js';
 import { dedupeKey } from '../utils/dedupe.js';
 
 function toLead(candidate, audit, key) {
-  return {
+  const base = {
     dedupeKey: key,
     companyName: candidate.companyName,
     kvkNumber: candidate.kvkNumber || null,
@@ -26,6 +27,12 @@ function toLead(candidate, audit, key) {
     source: candidate.source || config.leadSource,
     lastChecked: new Date().toISOString(),
   };
+  // Voorlopige leadscore (heuristiek); de PageSpeed-analyse verfijnt dit later.
+  const { leadScore, confidence } = computeLeadScore(base, null, null);
+  base.leadScore = leadScore;
+  base.confidence = confidence;
+  base.analysisStatus = audit.hasWebsite ? 'wacht' : 'nvt';
+  return base;
 }
 
 function passesFilters(candidate, audit, filters) {

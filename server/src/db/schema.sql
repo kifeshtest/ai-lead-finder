@@ -34,6 +34,23 @@ CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads (created_at);
 ALTER TABLE leads ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'nieuw';
 ALTER TABLE leads ADD COLUMN IF NOT EXISTS note   TEXT;
 
+-- Fase 1: analyse, scoring, CRM
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS analysis_status   TEXT NOT NULL DEFAULT 'nvt';   -- nvt|wacht|bezig|voltooid|mislukt
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS analysis_attempts INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS analyzed_at       TIMESTAMPTZ;
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS pagespeed         JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS checks            JSONB DEFAULT '{}'::jsonb;
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS talking_points    TEXT[] DEFAULT '{}';
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS positive_note     TEXT;
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS opening_line      TEXT;
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS lead_score        INTEGER;   -- commerciële kansscore 0-100
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS confidence        INTEGER;   -- betrouwbaarheid gegevens 0-100
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS follow_up_date    DATE;
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS favorite          BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE leads ADD COLUMN IF NOT EXISTS contact_person    TEXT;
+CREATE INDEX IF NOT EXISTS idx_leads_analysis_status ON leads (analysis_status);
+CREATE INDEX IF NOT EXISTS idx_leads_lead_score ON leads (lead_score);
+
 CREATE TABLE IF NOT EXISTS generation_runs (
   id          BIGSERIAL PRIMARY KEY,
   status      TEXT NOT NULL DEFAULT 'pending',   -- pending | running | done | error

@@ -34,6 +34,18 @@ export const config = {
   googlePlacesApiKey: process.env.GOOGLE_PLACES_API_KEY || '',
   // Harde limiet op Google Places-verzoeken per generatie (kostenbeheersing).
   maxPlacesRequests: int(process.env.MAX_PLACES_REQUESTS, 40),
+
+  // ── Auth ──
+  authUsername: process.env.ADMIN_USERNAME || 'admin',
+  authPassword: process.env.ADMIN_PASSWORD || 'changeme',
+  jwtSecret: process.env.JWT_SECRET || '',
+  jwtTtlHours: int(process.env.JWT_TTL_HOURS, 12),
+
+  // ── PageSpeed Insights ──
+  pageSpeedApiKey: process.env.PAGESPEED_API_KEY || '',
+  analysisEnabled: bool(process.env.ANALYSIS_ENABLED, true),
+  analysisMaxAttempts: int(process.env.ANALYSIS_MAX_ATTEMPTS, 3),
+  analysisIntervalMs: int(process.env.ANALYSIS_INTERVAL_MS, 4000),
 };
 
 export const usePostgres = Boolean(config.databaseUrl);
