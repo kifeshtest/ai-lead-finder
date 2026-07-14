@@ -36,7 +36,8 @@ export const config = {
   maxPlacesRequests: int(process.env.MAX_PLACES_REQUESTS, 40),
 
   // ── Auth ──
-  authUsername: process.env.ADMIN_USERNAME || 'admin',
+  // Gebruikersnaam mag in code (niet geheim). Wachtwoord ALTIJD via ADMIN_PASSWORD (env), nooit hardcoden.
+  authUsername: process.env.ADMIN_USERNAME || 'SVadmin',
   authPassword: process.env.ADMIN_PASSWORD || 'changeme',
   jwtSecret: process.env.JWT_SECRET || '',
   jwtTtlHours: int(process.env.JWT_TTL_HOURS, 12),

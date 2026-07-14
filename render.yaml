@@ -52,7 +52,7 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: ADMIN_USERNAME
-        value: jaimy
+        value: SVadmin
       - key: ADMIN_PASSWORD
         sync: false
       # ── PageSpeed Insights (gratis key, geen creditcard) — optioneel maar aanbevolen ──
